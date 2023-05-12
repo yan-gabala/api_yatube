@@ -8,7 +8,7 @@ from .serializers import CommentSerializer, PostSerializer
 from .serializers import GroupSerializer
 from .permissions import IsOwnerOrReadOnly
 from .permissions import AuthorOrReadOnlyPermission
-               
+
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -25,7 +25,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [permissions.IsAuthenticated,
                           AuthorOrReadOnlyPermission]
 
@@ -33,9 +32,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_authenticated:
             return Response(serializer.data,
                             status=status.HTTP_401_UNAUTHORIZED)
-        post = get_object_or_404(Post, id=self.kwargs.get('post_id')) 
+        post = get_object_or_404(Post, id=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user, post=post)
-     
+
     def get_queryset(self):
         post = get_object_or_404(Post, id=self.kwargs.get('post_id'))
         return post.comments.all()
